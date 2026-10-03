@@ -20,7 +20,13 @@ from analyzer.repo_ingest import RepoIngest, validate_github_url
 from analyzer.repo_review import RepoReviewer
 from analyzer.repo_fix import RepoFixer
 
-app = Flask(__name__, static_folder="static", template_folder="templates")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app = Flask(
+    __name__,
+    root_path=BASE_DIR,
+    static_folder=os.path.join(BASE_DIR, "static"),
+    template_folder=os.path.join(BASE_DIR, "templates")
+)
 CORS(app)
 
 # Flask-Limiter for rate-limiting protection (TRD Section 10 & Chunk 7)
