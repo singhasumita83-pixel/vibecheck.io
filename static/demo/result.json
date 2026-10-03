@@ -1,0 +1,193 @@
+{
+  "run_id": "demo-vibecheck-7planted-flaws",
+  "model": {
+    "name": "gemma-4-26b-a4b-it",
+    "license": "Apache 2.0 (Open-Weight)",
+    "served_by": "hosted"
+  },
+  "image": {
+    "width": 1200,
+    "height": 750
+  },
+  "summary": {
+    "counts": {
+      "critical": 1,
+      "high": 3,
+      "medium": 3,
+      "low": 0
+    },
+    "scores": {
+      "Usability": 66,
+      "Visual Hierarchy": 64,
+      "Accessibility": 53,
+      "Navigation": 76,
+      "Forms & Feedback": 63,
+      "Content & Copy": 77,
+      "Responsive": 75
+    },
+    "disclaimer": "AI heuristic indicators, not validated UX metrics."
+  },
+  "findings": [
+    {
+      "id": "f1",
+      "title": "Severe Low-Contrast Gray-on-Gray Notice Text",
+      "category": "Accessibility",
+      "severity": "Critical",
+      "confidence": 0.94,
+      "heuristic": "WCAG 2.1 AA 1.4.3 Contrast (Minimum)",
+      "location": {
+        "x": 0.04,
+        "y": 0.19,
+        "w": 0.60,
+        "h": 0.07
+      },
+      "problem": "Notice banner uses light gray text (#CBD5E1) on an off-white background (#F8FAFC), yielding an unacceptable 1.8:1 contrast ratio.",
+      "impact": "Users with low vision or working in bright ambient lighting cannot read system synchronization alerts, risking data loss.",
+      "solution": "Darken the text to #334155 (6.2:1 contrast) and add an info icon indicator.",
+      "evidence": "Measured text contrast 1.8:1 fails the WCAG AA minimum requirement of 4.5:1.",
+      "source": "llm"
+    },
+    {
+      "id": "f2",
+      "title": "Primary 'Submit Order' CTA Styled Like Inactive Secondary Button",
+      "category": "Visual Hierarchy",
+      "severity": "High",
+      "confidence": 0.91,
+      "heuristic": "Nielsen #4 Consistency and Standards",
+      "location": {
+        "x": 0.68,
+        "y": 0.72,
+        "w": 0.13,
+        "h": 0.07
+      },
+      "problem": "The primary 'Submit Order' button is styled with a faded gray background (#E2E8F0) and dull gray text (#64748B), making it visually indistinguishable from disabled or secondary controls.",
+      "impact": "Users hesitate at checkout/submission, generating drop-offs and redundant clicks.",
+      "solution": "Style with solid brand primary color (#6D4AFF), white bold text, and a distinct hover elevation.",
+      "evidence": "Button fill #E2E8F0 has less than 5% luminance contrast compared to adjacent neutral surfaces.",
+      "source": "llm"
+    },
+    {
+      "id": "f3",
+      "title": "Tiny 22px Action Buttons Violate Touch/Click Target Minimums",
+      "category": "Usability",
+      "severity": "High",
+      "confidence": 0.89,
+      "heuristic": "WCAG 2.1 AAA 2.5.5 Target Size",
+      "location": {
+        "x": 0.86,
+        "y": 0.10,
+        "w": 0.11,
+        "h": 0.04
+      },
+      "problem": "Header action buttons measure only 22x22px with no visible text labels or tooltips.",
+      "impact": "Causes frequent mis-clicks, frustration, and accidental destructive actions like deletion.",
+      "solution": "Expand clickable padding to at least 44x44px and provide accessible labels or tooltips.",
+      "evidence": "Button bounding box measures 22x22px, far below the recommended 44x44px minimum target area.",
+      "source": "llm"
+    },
+    {
+      "id": "f4",
+      "title": "Unhelpful 'Invalid' Error Banner Without Field Guidance",
+      "category": "Forms & Feedback",
+      "severity": "High",
+      "confidence": 0.87,
+      "heuristic": "Nielsen #9 Help Users Recognize, Diagnose, and Recover from Errors",
+      "location": {
+        "x": 0.68,
+        "y": 0.23,
+        "w": 0.28,
+        "h": 0.05
+      },
+      "problem": "A generic red banner states 'Invalid.' without identifying which input failed or how to correct it.",
+      "impact": "Users are blocked from completing dispatch orders because they cannot diagnose formatting errors.",
+      "solution": "Replace with inline validation under the specific input (e.g., 'Internal Ledger Key must follow format XX-X-XXX-XX').",
+      "evidence": "Single word banner 'Invalid.' rendered without inline field associations.",
+      "source": "llm"
+    },
+    {
+      "id": "f5",
+      "title": "Cryptic 9-Item Flat Navigation With 3-Letter Abbreviations",
+      "category": "Navigation",
+      "severity": "Medium",
+      "confidence": 0.82,
+      "heuristic": "Nielsen #6 Recognition Rather Than Recall",
+      "location": {
+        "x": 0.02,
+        "y": 0.02,
+        "w": 0.50,
+        "h": 0.05
+      },
+      "problem": "Top navigation bar lists 9 cryptic three-letter abbreviations ('Sys', 'Opr', 'Lst', 'Rec'...) with no active indicator.",
+      "impact": "Steep learning curve; new users cannot navigate the system without external documentation.",
+      "solution": "Use human-readable labels ('System', 'Operations', 'Inventory List') and highlight the active view.",
+      "evidence": "9 adjacent items formatted as truncated 3-letter acronyms without icons or explanatory tooltips.",
+      "source": "llm"
+    },
+    {
+      "id": "f6",
+      "title": "Dense Unstructured Wall of Text Reduces Scannability",
+      "category": "Content & Copy",
+      "severity": "Medium",
+      "confidence": 0.79,
+      "heuristic": "Nielsen #8 Aesthetic and Minimalist Design",
+      "location": {
+        "x": 0.04,
+        "y": 0.28,
+        "w": 0.60,
+        "h": 0.12
+      },
+      "problem": "Instructions are presented as a 4-line uninterrupted block of dense text without subheadings or bullets.",
+      "impact": "Operators overlook critical instructions regarding barcode verification and pallet weight calibrations.",
+      "solution": "Format the operational instructions into 3 structured bullet points with bold keywords.",
+      "evidence": "Body paragraph spans over 380 characters without typographical hierarchy or itemized breaks.",
+      "source": "llm"
+    },
+    {
+      "id": "f7",
+      "title": "Fixed-Width Table Induces Horizontal Scrolling on Smaller Viewports",
+      "category": "Responsive",
+      "severity": "Medium",
+      "confidence": 0.84,
+      "heuristic": "Nielsen #1 Visibility of System Status",
+      "location": {
+        "x": 0.04,
+        "y": 0.43,
+        "w": 0.60,
+        "h": 0.27
+      },
+      "problem": "The inventory batch table is configured with a fixed width, causing horizontal layout overflow.",
+      "impact": "On laptops and tablet screens, key columns like status and routing gateways are hidden off-screen.",
+      "solution": "Implement a responsive scroll wrapper with sticky headers or collapsible card views on narrow screens.",
+      "evidence": "Table container width extends beyond viewport boundaries on viewports under 1200px.",
+      "source": "llm"
+    }
+  ],
+  "fix_plan": [
+    {
+      "priority": 1,
+      "title": "Fix Critical Text Contrast Ratio (Accessibility)",
+      "finding_ids": ["f1"]
+    },
+    {
+      "priority": 2,
+      "title": "Elevate 'Submit Order' Primary CTA (Visual Hierarchy)",
+      "finding_ids": ["f2"]
+    },
+    {
+      "priority": 3,
+      "title": "Enlarge Click Targets to 44x44px (Usability)",
+      "finding_ids": ["f3"]
+    },
+    {
+      "priority": 4,
+      "title": "Add Specific Inline Form Error Messages (Forms & Feedback)",
+      "finding_ids": ["f4"]
+    },
+    {
+      "priority": 5,
+      "title": "Clarify Navigation Labels and Active State (Navigation)",
+      "finding_ids": ["f5"]
+    }
+  ],
+  "fix_prompt": "You are improving the UI/UX of this existing application. Apply the following prioritized fixes without breaking any existing functionality, layout flow, or business logic.\n\nContext for changes:\n- Target User Persona: Inventory Warehouse Specialist\n- User Goal: Dispatch shipment and reconcile stock\n\nPRIORITIZED FIXES:\n1. [CRITICAL] Severe Low-Contrast Gray-on-Gray Notice Text\n   - Problem: Notice banner uses light gray text (#CBD5E1) on an off-white background (#F8FAFC), yielding an unacceptable 1.8:1 contrast ratio.\n   - Fix: Darken the text to #334155 (6.2:1 contrast) and add an info icon indicator.\n   - Target Area: approx. top left (x: 4%, y: 19%)\n   - Heuristic / Guideline: WCAG 2.1 AA 1.4.3 Contrast (Minimum)\n\n2. [HIGH] Primary 'Submit Order' CTA Styled Like Inactive Secondary Button\n   - Problem: The primary 'Submit Order' button is styled with a faded gray background (#E2E8F0) and dull gray text (#64748B), making it visually indistinguishable from disabled or secondary controls.\n   - Fix: Style with solid brand primary color (#6D4AFF), white bold text, and a distinct hover elevation.\n   - Target Area: approx. bottom right (x: 68%, y: 72%)\n   - Heuristic / Guideline: Nielsen #4 Consistency and Standards\n\n3. [HIGH] Tiny 22px Action Buttons Violate Touch/Click Target Minimums\n   - Problem: Header action buttons measure only 22x22px with no visible text labels or tooltips.\n   - Fix: Expand clickable padding to at least 44x44px and provide accessible labels or tooltips.\n   - Target Area: approx. top right (x: 86%, y: 10%)\n   - Heuristic / Guideline: WCAG 2.1 AAA 2.5.5 Target Size\n\n4. [HIGH] Unhelpful 'Invalid' Error Banner Without Field Guidance\n   - Problem: A generic red banner states 'Invalid.' without identifying which input failed or how to correct it.\n   - Fix: Replace with inline validation under the specific input (e.g., 'Internal Ledger Key must follow format XX-X-XXX-XX').\n   - Target Area: approx. top right (x: 68%, y: 23%)\n   - Heuristic / Guideline: Nielsen #9 Help Users Recognize, Diagnose, and Recover from Errors\n\n5. [MEDIUM] Cryptic 9-Item Flat Navigation With 3-Letter Abbreviations\n   - Problem: Top navigation bar lists 9 cryptic three-letter abbreviations ('Sys', 'Opr', 'Lst', 'Rec'...) with no active indicator.\n   - Fix: Use human-readable labels ('System', 'Operations', 'Inventory List') and highlight the active view.\n   - Target Area: approx. top left (x: 2%, y: 2%)\n   - Heuristic / Guideline: Nielsen #6 Recognition Rather Than Recall\n\nGUIDELINES FOR THE FIXES:\n- Maintain WCAG AA compliance (ensure text contrast is at least 4.5:1 for body and 3:1 for large headers).\n- Ensure interactive touch/click targets are at least 44x44px.\n- Use consistent typography hierarchy, spacing scale, and clear state styling (hover/focus/disabled/active).\n- Keep the existing technology stack and component architecture intact.\n- Once finished, summarize the exact code modifications made."
+}

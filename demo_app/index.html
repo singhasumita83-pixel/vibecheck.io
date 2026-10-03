@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeStore Admin Dashboard — Improved & Accessible</title>
+  <style>
+    /* Design System Tokens (WCAG AA & Nielsen Heuristic Compliant) */
+    :root {
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --surface-2: #F1F5F9;
+      --border: #E2E8F0;
+      --text: #0F172A;
+      --text-muted: #475569;
+      --primary: #6D4AFF;
+      --primary-hover: #5A38E6;
+      --error-bg: #FEF2F2;
+      --error-border: #FCA5A5;
+      --error-text: #991B1B;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    /* FIX 6: Navigation - Human readable, active indicator, clean visual anchors */
+    .app-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+    .app-nav a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+    }
+    .app-nav a:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+    .app-nav a.active {
+      background: var(--primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: gap;
+    }
+    .header-bar h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* FIX 4: Usability - Minimum 44x44px touch targets with icons and labels */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-action {
+      min-height: 44px;
+      min-width: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .btn-action:hover {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: #CBD5E1;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .layout-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+    }
+
+    /* FIX 1: Accessibility - High contrast text (>4.5:1 ratio) with indicator icon */
+    .notice-banner {
+      color: #1E293B;
+      background-color: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-left: 4px solid var(--primary);
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+    .notice-banner svg {
+      flex-shrink: 0;
+      color: var(--primary);
+      margin-top: 1px;
+    }
+
+    /* FIX 7: Content & Copy - Segmented structured list with bold keywords */
+    .info-section {
+      margin-bottom: 24px;
+    }
+    .info-section h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+    .info-list {
+      list-style-type: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .info-list li {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      padding-left: 18px;
+      position: relative;
+    }
+    .info-list li::before {
+      content: "•";
+      color: var(--primary);
+      position: absolute;
+      left: 4px;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .info-list strong {
+      color: var(--text);
+    }
+
+    /* FIX 5: Responsive - Responsive table with max-width: 100% and overflow-x */
+    .table-responsive-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      -webkit-overflow-scrolling: touch;
+    }
+    .data-table {
+      width: 100%;
+      min-width: 680px;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th, .data-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table th {
+      background: var(--surface-2);
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: #FAFAFC; }
+
+    /* Form Styles */
+    .form-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .form-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* FIX 3: Forms & Feedback - Clear actionable error guidance */
+    .error-guidance {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      color: var(--error-text);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 18px;
+    }
+    .error-guidance strong {
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+    .form-group input {
+      width: 100%;
+      height: 42px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color 0.15s ease;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(109, 74, 255, 0.15);
+    }
+    .form-group .field-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* FIX 2: Visual Hierarchy - Distinct filled Primary CTA with clear hover state */
+    .cta-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .submit-button {
+      min-height: 44px;
+      background: var(--primary);
+      color: #FFFFFF;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(109, 74, 255, 0.2);
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .submit-button:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(109, 74, 255, 0.3);
+    }
+    .submit-button:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .cancel-button {
+      min-height: 44px;
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+    .cancel-button:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FIX 6: Clean, human-readable navigation with active anchor -->
+  <nav class="app-nav" aria-label="Main Navigation">
+    <a href="#">Dashboard</a>
+    <a href="#" class="active">Inventory & Stock</a>
+    <a href="#">Operations</a>
+    <a href="#">Shipments</a>
+    <a href="#">Audit Logs</a>
+    <a href="#">Settings</a>
+  </nav>
+
+  <div class="header-bar">
+    <h2>Inventory Management v2.4</h2>
+    
+    <!-- FIX 4: Minimum 44x44px touch targets with icons and labels -->
+    <div class="header-actions">
+      <button class="btn-action" title="Refresh Inventory">
+        <span>↻</span> Refresh
+      </button>
+      <button class="btn-action" title="Filter View">
+        <span>▼</span> Filter
+      </button>
+      <button class="btn-action" title="More Actions">
+        <span>⋯</span> Actions
+      </button>
+    </div>
+  </div>
+
+  <div class="layout-grid">
+    <div>
+      <div class="card">
+        
+        <!-- FIX 1: High-contrast notice text (>4.5:1 ratio) with indicator icon -->
+        <div class="notice-banner" role="status">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <div>
+            <strong>System Synchronization Notice:</strong>
+            Current timestamp offset delta is 412ms. All nodes are functioning within safe operational latency thresholds.
+          </div>
+        </div>
+
+        <!-- FIX 7: Content & Copy - Segmented structured list with bold keywords -->
+        <div class="info-section">
+          <h3>Standard Operating Dispatch Checklist</h3>
+          <ul class="info-list">
+            <li><strong>SKU Verification:</strong> Verify catalog item SKUs against merchant identifiers across storage nodes before dock release.</li>
+            <li><strong>Tare Calibration:</strong> Ensure pallet tare weights are calibrated against certified load sensors to prevent fulfillment divergence.</li>
+            <li><strong>RFID Sealing:</strong> Affix moisture-resistant RFID seals to all container latches prior to carrier dispatch.</li>
+          </ul>
+        </div>
+
+        <!-- FIX 5: Responsive container with max-width: 100% and touch scroll -->
+        <div class="table-responsive-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Batch ID</th>
+                <th>Warehouse Zone</th>
+                <th>Supplier Code</th>
+                <th>SKU Manifest</th>
+                <th>Item Count</th>
+                <th>Unit Weight</th>
+                <th>Status Check</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>#B-9021</strong></td>
+                <td>Zone West 4</td>
+                <td>SUP-ACME-44</td>
+                <td>SKU-88912-ZX</td>
+                <td>1,420</td>
+                <td>4.2 kg</td>
+                <td><span style="color:#16A34A; font-weight:600;">● Ready</span></td>
+              </tr>
+              <tr>
+                <td><strong>#B-9022</strong></td>
+                <td>Zone North 2</td>
+                <td>SUP-GLOBAL-12</td>
+                <td>SKU-11009-QW</td>
+                <td>850</td>
+                <td>1.8 kg</td>
+                <td><span style="color:#CA8A04; font-weight:600;">● Pending</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <div>
+      <div class="card form-card">
+        <h3>Create Dispatch Item</h3>
+        <p>Complete the required fields to schedule freight departure.</p>
+
+        <!-- FIX 3: Clear, specific inline error guidance -->
+        <div class="error-guidance" role="alert">
+          <strong>Validation Issue Detected:</strong>
+          Please enter a valid Internal Ledger Key in the format <code>XX-X-XXX-XX</code> (e.g. <code>09-X-442-99B</code>).
+        </div>
+
+        <form onsubmit="event.preventDefault();">
+          <div class="form-group">
+            <label for="package-code">Package Code</label>
+            <input type="text" id="package-code" value="PKG-8812-A" required>
+            <div class="field-hint">Auto-generated barcode reference</div>
+          </div>
+
+          <div class="form-group">
+            <label for="ledger-key">Internal Ledger Key</label>
+            <input type="text" id="ledger-key" placeholder="e.g. 09-X-442-99B" style="border-color: #F87171;" required>
+            <div class="field-hint" style="color: #DC2626;">Format must follow: XX-X-XXX-XX</div>
+          </div>
+
+          <div class="form-group">
+            <label for="customs-contact">Customs Dispatch Contact</label>
+            <input type="text" id="customs-contact" placeholder="broker@logistics.com">
+          </div>
+
+          <!-- FIX 2: Distinct Primary CTA styled with high contrast primary purple -->
+          <div class="cta-area">
+            <button type="submit" class="submit-button">
+              Submit Order
+            </button>
+            <button type="button" class="cancel-button">
+              Cancel
+            </button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

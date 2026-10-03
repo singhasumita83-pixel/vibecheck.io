@@ -1,0 +1,233 @@
+{
+  "run_id": "demo-repo-vibecheck",
+  "mode": "repo",
+  "model": {
+    "name": "Qwen2.5-Coder-7B-Instruct (Open-Weight)",
+    "license": "Apache 2.0 (Open-Weight)",
+    "served_by": "local"
+  },
+  "repo_info": {
+    "url": "https://github.com/vibecheck-ui/sample-flawed-app",
+    "branch": "main",
+    "files_scanned": 2,
+    "files_skipped": 0,
+    "scanned_files": ["index.html", "styles.css"]
+  },
+  "summary": {
+    "counts": {
+      "critical": 1,
+      "high": 3,
+      "medium": 3,
+      "low": 0
+    },
+    "scores": {
+      "Accessibility": 64,
+      "Forms & Feedback": 85,
+      "Responsive": 85,
+      "Usability": 88,
+      "Content & Copy": 92,
+      "Visual Hierarchy": 100,
+      "Navigation": 100
+    },
+    "disclaimer": "AI heuristic indicators, not validated UX metrics.",
+    "verified_fixes": 7
+  },
+  "findings": [
+    {
+      "id": "r1",
+      "title": "Low CSS color contrast ratio: 1.84:1",
+      "category": "Accessibility",
+      "severity": "Critical",
+      "confidence": 0.94,
+      "heuristic": "WCAG 2.1 AA 1.4.3 Contrast (Minimum)",
+      "code_location": {
+        "file": "styles.css",
+        "line_start": 3,
+        "line_end": 4
+      },
+      "snippet": "  color: #b8b8b8;\n  background-color: #f7f7f7;",
+      "problem": "Foreground color #b8b8b8 on background #f7f7f7 provides only 1.84:1 contrast ratio.",
+      "impact": "Users with low vision cannot distinguish text from surface backgrounds.",
+      "solution": "Adjust text color to #334155 to exceed the WCAG AA minimum 4.5:1 ratio.",
+      "evidence": "Measured ratio 1.84:1 fails 4.5:1 AA threshold.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/styles.css\n+++ b/styles.css\n@@ -3,1 +3,1 @@\n-  color: #b8b8b8;\n+  color: #334155;",
+        "validated": true,
+        "explanation": "Updated text color from #b8b8b8 to high-contrast #334155."
+      }
+    },
+    {
+      "id": "r2",
+      "title": "Image missing required alt text",
+      "category": "Accessibility",
+      "severity": "High",
+      "confidence": 0.95,
+      "heuristic": "WCAG 2.1 AA 1.1.1 Non-text Content",
+      "code_location": {
+        "file": "index.html",
+        "line_start": 8,
+        "line_end": 8
+      },
+      "snippet": "    <img src=\"logo.png\">",
+      "problem": "The <img> element is missing an alt attribute.",
+      "impact": "Screen reader users will not understand the context or purpose of this graphic.",
+      "solution": "Add a concise, descriptive alt attribute.",
+      "evidence": "No alt attribute found on <img> tag.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/index.html\n+++ b/index.html\n@@ -8,1 +8,1 @@\n-    <img src=\"logo.png\">\n+    <img alt=\"Descriptive illustration\" src=\"logo.png\">",
+        "validated": true,
+        "explanation": "Added descriptive alt attribute to image element."
+      }
+    },
+    {
+      "id": "r3",
+      "title": "Form input lacks accessible label or id",
+      "category": "Forms & Feedback",
+      "severity": "High",
+      "confidence": 0.90,
+      "heuristic": "WCAG 2.1 AA 3.3.2 Labels or Instructions",
+      "code_location": {
+        "file": "index.html",
+        "line_start": 13,
+        "line_end": 13
+      },
+      "snippet": "      <input type=\"email\" placeholder=\"Your work email\">",
+      "problem": "The <input> field does not specify an aria-label or an id associated with a <label>.",
+      "impact": "Assistive technologies cannot announce the expected input for this field.",
+      "solution": "Link an explicit <label for=\"id\"> or add aria-label=\"Your work email\".",
+      "evidence": "Missing label pairing on email input.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/index.html\n+++ b/index.html\n@@ -13,1 +13,1 @@\n-      <input type=\"email\" placeholder=\"Your work email\">\n+      <input aria-label=\"Your work email\" type=\"email\" placeholder=\"Your work email\">",
+        "validated": true,
+        "explanation": "Added accessible aria-label to input field."
+      }
+    },
+    {
+      "id": "r4",
+      "title": "Focus outline removed without replacement",
+      "category": "Accessibility",
+      "severity": "High",
+      "confidence": 0.89,
+      "heuristic": "WCAG 2.1 AA 2.4.7 Focus Visible",
+      "code_location": {
+        "file": "styles.css",
+        "line_start": 12,
+        "line_end": 12
+      },
+      "snippet": "  outline: none;",
+      "problem": "CSS declares 'outline: none' removing native focus indicators.",
+      "impact": "Keyboard navigation becomes impossible as users cannot visually track focused controls.",
+      "solution": "Provide an accessible custom focus ring (e.g. outline: 2px solid var(--primary); outline-offset: 2px).",
+      "evidence": "outline: none detected without replacement focus style.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/styles.css\n+++ b/styles.css\n@@ -12,1 +12,1 @@\n-  outline: none;\n+  outline: 2px solid var(--primary, #6D4AFF); outline-offset: 2px;",
+        "validated": true,
+        "explanation": "Replaced outline: none with visible 2px focus ring."
+      }
+    },
+    {
+      "id": "r5",
+      "title": "Hardcoded fixed container width: 1200px",
+      "category": "Responsive",
+      "severity": "Medium",
+      "confidence": 0.85,
+      "heuristic": "Nielsen #1 Visibility of System Status",
+      "code_location": {
+        "file": "styles.css",
+        "line_start": 8,
+        "line_end": 8
+      },
+      "snippet": "  width: 1200px;",
+      "problem": "Hardcoded fixed width of 1200px will overflow screens on narrower viewports.",
+      "impact": "Induces horizontal layout scrolling and clips content on mobile devices.",
+      "solution": "Use max-width: 1200px; width: 100%; instead of rigid pixel widths.",
+      "evidence": "Fixed width constraint of 1200px without fluid container fallback.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/styles.css\n+++ b/styles.css\n@@ -8,1 +8,1 @@\n-  width: 1200px;\n+  max-width: 1200px; width: 100%;",
+        "validated": true,
+        "explanation": "Converted rigid width to responsive max-width: 1200px."
+      }
+    },
+    {
+      "id": "r6",
+      "title": "Sub-minimum font size: 10px",
+      "category": "Usability",
+      "severity": "Medium",
+      "confidence": 0.88,
+      "heuristic": "WCAG 2.1 AA 1.4.4 Resize Text",
+      "code_location": {
+        "file": "styles.css",
+        "line_start": 16,
+        "line_end": 16
+      },
+      "snippet": "  font-size: 10px;",
+      "problem": "Text font size is set to 10px, below the recommended 12px minimum.",
+      "impact": "Severely impairs readability for users with low vision or on mobile screens.",
+      "solution": "Increase base font size to at least 13px.",
+      "evidence": "font-size declared as 10px.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/styles.css\n+++ b/styles.css\n@@ -16,1 +16,1 @@\n-  font-size: 10px;\n+  font-size: 13px;",
+        "validated": true,
+        "explanation": "Increased font size to 13px."
+      }
+    },
+    {
+      "id": "r7",
+      "title": "Ambiguous action copy: 'Click here'",
+      "category": "Content & Copy",
+      "severity": "Medium",
+      "confidence": 0.82,
+      "heuristic": "Nielsen #2 Match Between System and the Real World",
+      "code_location": {
+        "file": "index.html",
+        "line_start": 9,
+        "line_end": 9
+      },
+      "snippet": "    <button>Click here</button>",
+      "problem": "The button label 'Click here' lacks context about what happens next.",
+      "impact": "Users hesitate when interacting with action controls.",
+      "solution": "Replace 'Click here' with an explicit descriptive action like 'Save and Continue'.",
+      "evidence": "Generic text 'Click here' used as button content.",
+      "source": "static",
+      "fix": {
+        "diff": "--- a/index.html\n+++ b/index.html\n@@ -9,1 +9,1 @@\n-    <button>Click here</button>\n+    <button>Save and Continue</button>",
+        "validated": true,
+        "explanation": "Updated vague button text to 'Save and Continue'."
+      }
+    }
+  ],
+  "fix_plan": [
+    {
+      "priority": 1,
+      "title": "Fix critical text contrast ratio (styles.css:3)",
+      "finding_ids": ["r1"]
+    },
+    {
+      "priority": 2,
+      "title": "Add required alt attribute to <img> (index.html:8)",
+      "finding_ids": ["r2"]
+    },
+    {
+      "priority": 3,
+      "title": "Add accessible aria-label to form input (index.html:13)",
+      "finding_ids": ["r3"]
+    },
+    {
+      "priority": 4,
+      "title": "Restore accessible focus outline (styles.css:12)",
+      "finding_ids": ["r4"]
+    },
+    {
+      "priority": 5,
+      "title": "Convert hardcoded width to responsive layout (styles.css:8)",
+      "finding_ids": ["r5"]
+    }
+  ],
+  "fix_prompt": "You are fixing UI and accessibility issues identified in this codebase.\nContext: Persona='Developer', Goal='Fix accessibility and responsiveness'.\n\nPRIORITIZED CODE FIXES:\n1. [CRITICAL] Low CSS color contrast ratio: 1.84:1 in styles.css:3\n   - Problem: Foreground color #b8b8b8 on background #f7f7f7 provides only 1.84:1 contrast ratio.\n   - Fix: Adjust text color to #334155 to exceed the WCAG AA minimum 4.5:1 ratio.\n   - Heuristic: WCAG 2.1 AA 1.4.3 Contrast (Minimum)\n\n2. [HIGH] Image missing required alt text in index.html:8\n   - Problem: The <img> element is missing an alt attribute.\n   - Fix: Add a concise, descriptive alt attribute.\n   - Heuristic: WCAG 2.1 AA 1.1.1 Non-text Content\n\n3. [HIGH] Form input lacks accessible label or id in index.html:13\n   - Problem: The <input> field does not specify an aria-label or an id associated with a <label>.\n   - Fix: Link an explicit <label for=\"id\"> or add aria-label=\"Your work email\".\n   - Heuristic: WCAG 2.1 AA 3.3.2 Labels or Instructions\n\n4. [HIGH] Focus outline removed without replacement in styles.css:12\n   - Problem: CSS declares 'outline: none' removing native focus indicators.\n   - Fix: Provide an accessible custom focus ring.\n   - Heuristic: WCAG 2.1 AA 2.4.7 Focus Visible\n\n5. [MEDIUM] Hardcoded fixed container width: 1200px in styles.css:8\n   - Problem: Hardcoded fixed width of 1200px will overflow screens on narrower viewports.\n   - Fix: Use max-width: 1200px; width: 100%; instead of rigid pixel widths.\n   - Heuristic: Nielsen #1 Visibility of System Status"
+}

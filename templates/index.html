@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VibeCheck — Your app works. Does it make sense?</title>
+  <meta name="description" content="Upload a screenshot or a GitHub repo. VibeCheck marks what a first-time user would trip over, says why, and writes the fix.">
+
+  <!-- Google Fonts: Instrument Serif, Instrument Sans, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital,wght@0,400;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Design V2: Red Pen Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- ============================
+       HEADER
+       ============================ -->
+  <header class="app-header">
+    <div class="brand-logo" tabindex="0" role="link" aria-label="VibeCheck Home">
+      VibeCheck<span class="brand-dot">.</span>
+    </div>
+
+    <div class="header-actions">
+      <!-- Report-only actions (hidden until report) -->
+      <button id="btn-new-check" type="button" class="header-link hidden">New check</button>
+      <button id="btn-header-copy-fix" type="button" class="header-link hidden">Fix prompt</button>
+
+      <!-- Demo dropdown -->
+      <div class="demo-menu-wrap">
+        <button id="btn-demo-trigger" type="button" class="header-link">Demo ▾</button>
+        <div id="demo-menu" class="demo-menu">
+          <button id="btn-try-demo" type="button" class="demo-menu-item">Screenshot example</button>
+          <button id="btn-try-repo-demo" type="button" class="demo-menu-item">Repo example</button>
+          <a href="/demo" target="_blank" class="demo-menu-item">Open the flawed app</a>
+        </div>
+      </div>
+
+      <!-- Theme text toggle -->
+      <button id="btn-theme-toggle" type="button" class="theme-toggle" aria-label="Toggle theme">Dark</button>
+    </div>
+  </header>
+
+
+  <!-- ============================
+       MAIN CONTENT
+       ============================ -->
+  <main class="main-content">
+
+    <!-- ========================================== -->
+    <!-- SCREEN 1: LANDING                          -->
+    <!-- ========================================== -->
+    <section id="upload-screen">
+      <div class="landing-grid">
+
+        <!-- LEFT COLUMN: Headline, input, CTA -->
+        <div class="landing-left">
+          <h1 class="type-display" style="margin-bottom: 16px;">Your app works.<br>Does it <em>make sense</em>?</h1>
+          <p class="type-body" style="margin-bottom: 28px; max-width: 380px;">
+            Upload a screenshot or a GitHub repo. VibeCheck marks what a first-time user would trip over, says why, and writes the fix.
+          </p>
+
+          <!-- Mode tabs -->
+          <div class="tab-group">
+            <button id="tab-mode-screenshot" type="button" class="tab-item active" role="tab" aria-selected="true">Screenshot</button>
+            <button id="tab-mode-repo" type="button" class="tab-item" role="tab" aria-selected="false">Repo</button>
+          </div>
+
+          <!-- SCREENSHOT PANEL -->
+          <div id="panel-screenshot">
+            <!-- Dropzone -->
+            <div id="upload-dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop screenshot here or click to upload">
+              <input type="file" id="file-input" accept="image/png, image/jpeg, image/webp" class="hidden">
+              <div class="dropzone-bottom-marks"></div>
+
+              <!-- Empty state -->
+              <div id="dropzone-empty">
+                <p class="dropzone-text">Drop a PNG or JPG<br>or paste with <strong>Ctrl+V</strong></p>
+                <p class="dropzone-hint">Up to 5 MB</p>
+              </div>
+
+              <!-- Preview state -->
+              <div id="dropzone-preview" class="hidden">
+                <div class="file-preview">
+                  <img id="preview-image" src="" alt="Screenshot preview">
+                  <div class="file-preview-info">
+                    <div id="preview-filename" class="file-preview-name"></div>
+                    <div id="preview-filesize" class="file-preview-size"></div>
+                  </div>
+                  <div style="display:flex; gap:8px;">
+                    <button id="btn-change-file" type="button" class="file-preview-remove" style="color:var(--ink);">Change</button>
+                    <button id="btn-remove-file" type="button" class="file-preview-remove">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p id="dropzone-error" class="hidden" style="font-size:13px; color: var(--pen); margin-top: 6px;"></p>
+
+            <!-- Persona -->
+            <div class="persona-row">
+              <label for="persona-select" class="form-label">Who is the user?</label>
+              <select id="persona-select" class="form-select">
+                <option value="First-time user">First-time visitor</option>
+                <option value="College student">College student</option>
+                <option value="Busy professional" selected>Busy professional</option>
+                <option value="Older adult">Older adult</option>
+                <option value="Mobile-first user">Mobile-first user</option>
+                <option value="Developer">Developer</option>
+                <option value="Custom">Custom</option>
+              </select>
+            </div>
+
+            <!-- Hidden goal input (kept for API compat) -->
+            <input type="hidden" id="goal-input" value="">
+
+            <!-- Primary CTA -->
+            <div style="margin-top: 20px;">
+              <button id="btn-analyze" type="button" class="btn btn-primary" disabled>
+                Check my UI →
+              </button>
+            </div>
+          </div>
+
+          <!-- REPO PANEL -->
+          <div id="panel-repo" class="hidden">
+            <div class="repo-form-grid">
+              <div>
+                <label for="repo-url-input" class="form-label">Repository</label>
+                <input type="url" id="repo-url-input" class="form-input form-input-mono" placeholder="github.com/owner/repo">
+              </div>
+
+              <div class="repo-inline-row">
+                <div>
+                  <label for="repo-branch-input" class="form-label">Branch</label>
+                  <input type="text" id="repo-branch-input" class="form-input" placeholder="main">
+                </div>
+                <div>
+                  <label for="repo-model-select" class="form-label">Model</label>
+                  <select id="repo-model-select" class="form-select" style="font-size:13px;">
+                    <option value="qwen-2.5-coder-7b">Qwen 2.5 Coder 7B</option>
+                    <option value="deepseek-coder-v2">DeepSeek Coder V2</option>
+                    <option value="llama-3.2-3b">Llama 3.2 3B</option>
+                    <option value="custom">Custom endpoint…</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Custom Model Config -->
+              <div id="custom-model-fields" class="hidden custom-model-box">
+                <div class="repo-inline-row" style="margin-bottom: 8px;">
+                  <div>
+                    <label for="custom-base-url" class="form-label" style="font-size:12px;">Base URL</label>
+                    <input type="text" id="custom-base-url" class="form-input form-input-mono" placeholder="https://api.groq.com/openai/v1">
+                  </div>
+                  <div>
+                    <label for="custom-model-name" class="form-label" style="font-size:12px;">Model ID</label>
+                    <input type="text" id="custom-model-name" class="form-input form-input-mono" placeholder="qwen-2.5-coder-32b">
+                  </div>
+                </div>
+                <div>
+                  <label for="custom-api-key" class="form-label" style="font-size:12px;">API Key</label>
+                  <input type="password" id="custom-api-key" class="form-input form-input-mono" placeholder="Optional for localhost">
+                </div>
+              </div>
+
+              <p id="repo-error" class="hidden" style="font-size:13px; color: var(--pen);"></p>
+
+              <p class="safety-note">Read-only shallow clone. No packages installed, no scripts executed. Up to 25 UI files scanned. Temp files deleted immediately.</p>
+
+              <div>
+                <button id="btn-scan-repo" type="button" class="btn btn-primary">
+                  Scan the repo →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Status line -->
+          <div id="status-line" class="status-line">
+            Model: <span id="status-model-name">qwen-vl</span> · open weights · <span id="status-hosting">running locally</span>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Sample annotated example -->
+        <div class="landing-right">
+          <div class="sample-example">
+            <div class="sample-example-label">sample — demo-dashboard.png</div>
+            <div id="sample-img-wrap" style="position:relative; min-height:200px; background:var(--paper-2);">
+              <img id="sample-demo-img" src="/api/demo/screenshot" alt="Sample annotated dashboard with marked UI issues" style="width:100%; display:block;">
+              <!-- Sample markers rendered by JS -->
+            </div>
+          </div>
+          <div class="sample-evidence" style="margin-top: 8px;">
+            <div class="sample-evidence-line">
+              <span class="sample-evidence-num">①</span>
+              <span>Contrast ratio 2.3:1, needs 4.5:1 for body text</span>
+            </div>
+            <div class="sample-evidence-line" style="margin-top: 4px;">
+              <span class="sample-evidence-num">②</span>
+              <span>Primary action looks like a secondary button</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- SCREEN 2: ANALYZING                        -->
+    <!-- ========================================== -->
+    <section id="analyzing-screen" class="hidden">
+      <div class="analyzing-wrap">
+        <!-- User's screenshot or repo name -->
+        <div id="analyzing-thumb-box" class="scanline-container" style="max-width: 320px; margin: 0 auto; background: var(--paper-2);">
+          <img id="analyzing-thumbnail" src="" alt="Analyzing" style="width:100%; display:block; opacity:0.85;">
+          <div class="scanline"></div>
+        </div>
+
+        <!-- Checklist -->
+        <div id="analysis-stages" class="analyzing-checklist" aria-live="polite">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Repo files counter -->
+        <div id="repo-progress-counter" class="hidden" style="margin-top: 12px; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2);">
+          Files analyzed: <span id="files-scanned-count" style="color: var(--ink); font-weight: 600;">0</span>
+        </div>
+
+        <!-- Cancel button -->
+        <div style="margin-top: 24px; text-align: center;">
+          <button id="btn-cancel-analysis" type="button" class="btn-text" style="font-size:13px; color:var(--ink-2); text-decoration:underline;">Cancel and go back</button>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================== -->
+    <!-- SCREEN 3: REPORT                           -->
+    <!-- ========================================== -->
+    <section id="report-screen" class="hidden">
+
+      <!-- Summary line -->
+      <div class="report-summary">
+        <div id="summary-counts">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+
+      <!-- Scores -->
+      <div id="scores-container">
+        <!-- Injected dynamically -->
+      </div>
+
+      <!-- Report grid -->
+      <div id="report-layout">
+        <!-- Configured by JS as report-grid (screenshot) or repo-report-grid (repo) -->
+      </div>
+
+      <!-- Fix prompt section -->
+      <div id="fix-prompt-section" class="fix-prompt-section">
+        <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 4px;">
+          <span class="fix-prompt-label">Hand this to your coding tool</span>
+          <button id="btn-copy-prompt" type="button" class="copy-btn">Copy</button>
+        </div>
+        <pre id="fix-prompt-text" class="fix-prompt-box font-mono"></pre>
+      </div>
+
+      <!-- Model info footer -->
+      <div id="model-info-footer" class="model-info">
+        <!-- Injected dynamically -->
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- Toast -->
+  <aside id="app-toast" class="app-toast hidden" role="status" aria-live="polite">
+    <span id="toast-message"></span>
+    <button id="btn-toast-retry" type="button" class="btn-text hidden">Try again</button>
+  </aside>
+
+
+  <!-- App Logic -->
+  <script type="module" src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+body {
+  font-family: sans-serif;
+  color: #b8b8b8;
+  background-color: #f7f7f7;
+}
+
+.main-container {
+  width: 1200px;
+}
+
+button:focus {
+  outline: none;
+}
+
+.caption {
+  font-size: 10px;
+}
