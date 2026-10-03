@@ -44,7 +44,15 @@
       "problem": "Notice banner uses light gray text (#CBD5E1) on an off-white background (#F8FAFC), yielding an unacceptable 1.8:1 contrast ratio.",
       "impact": "Users with low vision or working in bright ambient lighting cannot read system synchronization alerts, risking data loss.",
       "solution": "Darken the text to #334155 (6.2:1 contrast) and add an info icon indicator.",
-      "evidence": "Measured text contrast 1.8:1 fails the WCAG AA minimum requirement of 4.5:1.",
+      "evidence": "Measured contrast about 2.3:1 (needs 4.5:1), sampled from screenshot",
+      "measured": {
+        "ratio": 2.3,
+        "fg": "#94a3b8",
+        "bg": "#f8fafc",
+        "suggested_fg": "#475569",
+        "suggested_ratio": 4.62,
+        "is_approximate": true
+      },
       "source": "llm"
     },
     {

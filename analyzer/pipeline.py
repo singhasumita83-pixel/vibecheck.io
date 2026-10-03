@@ -8,6 +8,7 @@ from analyzer.schema import AnalysisResponse, ImageDimensions
 from analyzer.llm_client import LLMClient
 from analyzer.scoring import rank_findings, calculate_summary
 from analyzer.fixprompt import build_fix_plan, build_fix_prompt
+from analyzer.contrast import apply_contrast_measurements
 
 MAX_IMAGE_PX = int(os.getenv("MAX_IMAGE_PX", 1568))
 
@@ -83,6 +84,13 @@ class AnalysisPipeline:
             viewport=viewport
         )
         
+        # 1b. Measured contrast evidence (WCAG 2.1)
+        try:
+            with Image.open(BytesIO(processed_bytes)) as pil_img:
+                apply_contrast_measurements(raw_findings, pil_img)
+        except Exception as e:
+            print(f"[Contrast measurement warning]: {e}")
+
         # 2. Ranking and sequential ID assignment (f1, f2...)
         ranked_findings = rank_findings(raw_findings)
         

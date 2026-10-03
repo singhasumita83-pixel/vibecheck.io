@@ -45,6 +45,7 @@ class Finding(BaseModel):
     code_location: Optional[CodeLocation] = None
     snippet: Optional[str] = None
     fix: Optional[CodeFix] = None
+    measured: Optional[Dict[str, Any]] = None
 
 class ModelInfo(BaseModel):
     name: str

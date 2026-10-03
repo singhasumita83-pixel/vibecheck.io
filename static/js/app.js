@@ -135,6 +135,8 @@ class App {
         this.btnNewCheck.classList.add('hidden');
         const headerCopy = document.getElementById('btn-header-copy-fix');
         if (headerCopy) headerCopy.classList.add('hidden');
+        const headerDownload = document.getElementById('btn-header-download-report');
+        if (headerDownload) headerDownload.classList.add('hidden');
         this.showScreen('upload');
       });
     }
@@ -148,6 +150,8 @@ class App {
         if (this.btnNewCheck) this.btnNewCheck.classList.add('hidden');
         const headerCopy = document.getElementById('btn-header-copy-fix');
         if (headerCopy) headerCopy.classList.add('hidden');
+        const headerDownload = document.getElementById('btn-header-download-report');
+        if (headerDownload) headerDownload.classList.add('hidden');
         this.showScreen('upload');
       });
     }

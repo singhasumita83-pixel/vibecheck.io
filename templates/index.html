@@ -28,6 +28,7 @@
       <!-- Report-only actions (hidden until report) -->
       <button id="btn-new-check" type="button" class="header-link hidden">New check</button>
       <button id="btn-header-copy-fix" type="button" class="header-link hidden">Fix prompt</button>
+      <button id="btn-header-download-report" type="button" class="header-link hidden">Download report (.md)</button>
 
       <!-- Demo dropdown -->
       <div class="demo-menu-wrap">
@@ -265,7 +266,10 @@
       <div id="fix-prompt-section" class="fix-prompt-section">
         <div style="display:flex; align-items:center; justify-content: space-between; margin-bottom: 4px;">
           <span class="fix-prompt-label">Hand this to your coding tool</span>
-          <button id="btn-copy-prompt" type="button" class="copy-btn">Copy</button>
+          <div style="display:flex; gap:12px; align-items:center;">
+            <button id="btn-download-report" type="button" class="btn-text" style="font-size:12px; color:var(--ink-2); text-decoration:underline;">Download report (.md)</button>
+            <button id="btn-copy-prompt" type="button" class="copy-btn">Copy</button>
+          </div>
         </div>
         <pre id="fix-prompt-text" class="fix-prompt-box font-mono"></pre>
       </div>
