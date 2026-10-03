@@ -94,6 +94,81 @@ VibeCheck is pre-configured for Vercel Serverless deployment using `vercel.json`
 
 ---
 
+## 🖥 Command-Line Interface (CLI)
+
+VibeCheck ships a standalone CLI that calls the analyzer pipeline directly — no web server needed.
+
+```bash
+# Audit a screenshot and print a table
+py cli.py ui.png
+
+# Fail CI if any High or above issues are found
+py cli.py ui.png --fail-on high
+
+# Write a Markdown report
+py cli.py ui.png --md report.md
+
+# Get raw JSON for piping
+py cli.py ui.png --json | jq .summary
+
+# With persona / goal context
+py cli.py checkout.png --persona "first-time buyer" --goal "complete purchase" --fail-on high
+```
+
+**Exit codes**
+
+| Code | Meaning |
+|------|---------|
+| `0`  | Analysis succeeded, no findings above threshold |
+| `1`  | Analysis succeeded, findings at/above `--fail-on` threshold |
+| `2`  | Input error (file not found, invalid image) |
+| `3`  | Unreachable model endpoint |
+
+---
+
+## 🔄 Re-check After Fixing (Before/After Delta)
+
+After receiving a report in the UI, click **"⟳ Re-check after fixing"** in the summary bar. Upload your improved screenshot — VibeCheck will:
+
+1. Run a fresh analysis on the new screenshot.
+2. Match findings between runs (IoU > 0.3 on bounding boxes or title Jaccard > 0.5).
+3. Show an **improvement banner**: `7 of 12 fixed, 2 new, 5 remaining`.
+4. Display per-category score changes: `Accessibility 54 → 78 (+24)`.
+5. Show contrast measurement deltas for matched findings: `2.3:1 → 4.8:1`.
+
+---
+
+## ⚙️ Use in CI (GitHub Actions)
+
+VibeCheck integrates into your pull request workflow via `.github/workflows/vibecheck.yml`.
+
+### Setup
+
+1. **Add a screenshot** at `docs/ui-screenshot.png` (or configure a different path via the `VIBECHECK_SCREENSHOT` repository variable).
+
+2. **Set repository secrets** in *Settings → Secrets and variables → Actions*:
+   - `LLM_BASE_URL` – Base URL of your hosted open-weight model endpoint (e.g. `https://api.together.xyz/v1`)
+   - `LLM_API_KEY` – API key for the endpoint
+
+   > **Note:** A hosted open-weight endpoint is required for CI because the model runs server-side. Free-tier providers like [Together AI](https://www.together.ai/) and [Groq](https://groq.com/) work well with `Qwen2-VL-72B-Instruct`.
+
+3. **Set optional repository variables** in *Settings → Secrets and variables → Variables*:
+   - `VLM_MODEL` – Vision model (default: `Qwen/Qwen2-VL-72B-Instruct`)
+   - `VERIFIER_MODEL` – Verifier model (default: `Qwen/Qwen2.5-72B-Instruct`)
+   - `VIBECHECK_SCREENSHOT` – Screenshot path (default: `docs/ui-screenshot.png`)
+   - `VIBECHECK_FAIL_ON` – Severity threshold (default: `high`)
+
+### What happens on each PR
+
+- Checks out the repo and installs dependencies.
+- Skips with a notice if the screenshot is missing.
+- Runs `cli.py` and writes a Markdown report.
+- Publishes the report to the **GitHub Step Summary** (visible in the Actions run).
+- Uploads the report as a downloadable artifact.
+- **Fails the job** only if findings at or above the threshold are found.
+
+---
+
 ## 🔒 Security & Privacy
 
 - **Read-Only Clones**: Shallow clones (`--depth 1`, `--no-recurse-submodules`) executed in disposable temporary directories.

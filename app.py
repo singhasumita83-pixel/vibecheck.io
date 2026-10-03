@@ -19,6 +19,8 @@ from analyzer.pipeline import AnalysisPipeline
 from analyzer.repo_ingest import RepoIngest, validate_github_url
 from analyzer.repo_review import RepoReviewer
 from analyzer.repo_fix import RepoFixer
+from analyzer.report_md import build_markdown
+from analyzer.compare import compare as compare_results
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(
@@ -479,6 +481,76 @@ def analyze_ui():
             "error": f"Analysis failed: {str(e)}",
             "retryable": True
         }), 502
+
+@app.route("/api/report.md", methods=["POST"])
+def export_report_markdown():
+    """
+    POST /api/report.md
+    Takes analysis result JSON and returns rendered Markdown report file attachment.
+    """
+    try:
+        data = request.get_json(silent=True)
+        if not data:
+            return jsonify({"error": "Missing result JSON in request body", "retryable": False}), 400
+
+        md_text = build_markdown(data)
+        run_id = data.get("run_id") or "report"
+        filename = f"vibecheck-{run_id}.md"
+
+        return Response(
+            md_text,
+            mimetype="text/markdown; charset=utf-8",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+        )
+    except Exception as e:
+        print(f"[Error in /api/report.md]: {e}")
+        return jsonify({"error": f"Failed to generate markdown report: {str(e)}", "retryable": False}), 500
+
+# New endpoint for rechecking contrast of a finding
+@app.route("/api/compare", methods=["POST"])
+def api_compare():
+    """Compare two analysis results to produce a before/after delta.
+    Expects JSON: {"before": <result_obj>, "after": <result_obj>}
+    Returns: {fixed, remaining, new, score_deltas, summary, counts, contrast_deltas}
+    """
+    try:
+        payload = request.get_json(silent=True) or {}
+        before = payload.get("before")
+        after = payload.get("after")
+        if not before or not after:
+            return jsonify({"error": "'before' and 'after' result objects are required", "retryable": False}), 400
+        delta = compare_results(before, after)
+        return jsonify(delta), 200
+    except Exception as e:
+        print(f"[Error in /api/compare]: {e}")
+        return jsonify({"error": str(e), "retryable": True}), 500
+
+# New endpoint for rechecking contrast of a finding
+@app.route("/api/recheck", methods=["POST"])
+def api_recheck():
+    """Re‑check contrast for a specific finding in a repo analysis job.
+    Expects JSON with {"job_id": ..., "finding_id": ...}.
+    Returns updated measured data if available.
+    """
+    try:
+        payload = request.get_json(silent=True) or {}
+        job_id = payload.get("job_id")
+        finding_id = payload.get("finding_id")
+        if not job_id or not finding_id:
+            return jsonify({"error": "job_id and finding_id required", "retryable": False}), 400
+        job = repo_jobs.get(job_id)
+        if not job or not job.get("result"):
+            return jsonify({"error": "Job not found or result missing", "retryable": False}), 404
+        for f in job["result"].get("findings", []):
+            if f.get("id") == finding_id:
+                measured = f.get("measured")
+                if measured:
+                    return jsonify({"finding_id": finding_id, "measured": measured}), 200
+                return jsonify({"error": "No measured data for this finding", "retryable": False}), 400
+        return jsonify({"error": "Finding not found", "retryable": False}), 404
+    except Exception as e:
+        print(f"[Error in /api/recheck]: {e}")
+        return jsonify({"error": str(e), "retryable": True}), 500
 
 @app.errorhandler(413)
 def request_entity_too_large(error):
