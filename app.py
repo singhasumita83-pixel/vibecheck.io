@@ -216,6 +216,11 @@ def health_check():
     """Health check endpoint per Chunk 0 specification."""
     return jsonify({"ok": True}), 200
 
+@app.route("/debug-env")
+def debug_env():
+    import json
+    return jsonify({k: str(v) for k, v in request.environ.items() if "PATH" in k or "URL" in k or "HTTP" in k})
+
 @app.route("/")
 @app.route("/api/index")
 @app.route("/api/index.py")
