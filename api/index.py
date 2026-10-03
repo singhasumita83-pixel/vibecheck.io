@@ -18,6 +18,13 @@ class VercelPathFix:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
+        if "test-info" in environ.get("PATH_INFO", "") or "test-info" in environ.get("QUERY_STRING", ""):
+            start_response("200 OK", [("Content-Type", "text/plain")])
+            info = f"PATH_INFO={environ.get('PATH_INFO')}\nQUERY_STRING={environ.get('QUERY_STRING')}\n"
+            for k, v in environ.items():
+                if "URL" in k or "PATH" in k or "URI" in k or "VERCEL" in k or "ROUTE" in k:
+                    info += f"{k}={v}\n"
+            return [info.encode("utf-8")]
         qs = environ.get("QUERY_STRING", "")
         if "__path__=" in qs:
             params = []
