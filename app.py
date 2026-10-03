@@ -217,6 +217,8 @@ def health_check():
     return jsonify({"ok": True}), 200
 
 @app.route("/")
+@app.route("/api/index")
+@app.route("/api/index.py")
 def index():
     return render_template("index.html")
 
