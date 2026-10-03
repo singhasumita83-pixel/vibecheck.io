@@ -8,8 +8,8 @@
   },
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/api/index.py?__path__=/$1"
+      "source": "/:path*",
+      "destination": "/api/index.py?__path__=/:path*"
     }
   ]
 }

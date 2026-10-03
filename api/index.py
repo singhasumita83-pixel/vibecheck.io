@@ -12,7 +12,7 @@ from app import app as flask_app
 class VercelPathFix:
     """
     WSGI Middleware to restore original request paths when running under Vercel rewrites.
-    Vercel passes the original matched path via the __path__ query parameter or headers.
+    Captures the real requested path from the __path__ rewrite parameter.
     """
     def __init__(self, wsgi_app):
         self.wsgi_app = wsgi_app
@@ -26,7 +26,9 @@ class VercelPathFix:
                     val = urllib.parse.unquote(part[9:])
                     while val.startswith("//"):
                         val = val[1:]
-                    environ["PATH_INFO"] = val if val else "/"
+                    if not val.startswith("/"):
+                        val = "/" + val
+                    environ["PATH_INFO"] = val
                 elif part:
                     params.append(part)
             environ["QUERY_STRING"] = "&".join(params)
